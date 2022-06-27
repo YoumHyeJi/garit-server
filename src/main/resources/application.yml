@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: dev
+
+---
+
+spring:
+  profiles:
+    active: local
+

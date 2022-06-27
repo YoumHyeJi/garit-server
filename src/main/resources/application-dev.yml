@@ -1,0 +1,12 @@
+server:
+  port: ${secrets.SERVER_PORT}
+
+spring:
+  application:
+    name: ${secrets.APPLICATION_NAME}
+
+  datasource:
+    driver-class-name: ${secrets.RDS_DRIVER_CLASS}
+    url: ${secrets.RDS_HOST}
+    username: ${secrets.RDS_USERNAME}
+    password: ${secrets.RDS_PASSWORD}
