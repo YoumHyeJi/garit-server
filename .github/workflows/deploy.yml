@@ -1,0 +1,71 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+
+name: Deploy Spring boot to Amazon EC2
+
+on:
+  push:
+    branches:
+      - dev
+      
+env:
+  PROJECT_NAME: garit-server
+  S3_BUCKET_NAME: garit-bucket
+  RESOURCE_PATH: ./src/main/resources/application-dev.yml
+  CODE_DEPLOY_APPLICATION_NAME: garit-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: dev-group
+
+jobs:
+  deploy:
+    name: DEPLOY
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+          
+      - name: Set application-dev.yml file 
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }} 
+        env:
+          server.port: ${{ secrets.SERVER_PORT }}
+          spring.application.name: ${{ secrets.APPLICATION_NAME }}
+          spring.datasource.driver-class-name: ${{ secrets.RDS_DRIVER_CLASS }}
+          spring.datasource.url: ${{ secrets.RDS_HOST }} 
+          spring.datasource.username: ${{ secrets.RDS_USERNAME }} 
+          spring.datasource.password: ${{ secrets.RDS_PASSWORD }} 
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Build with Gradle
+        run: ./gradlew build
+        shell: bash
+        
+      - name: Make zip file
+        run: zip -qq -r ./$GITHUB_SHA.zip .
+        shell: bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
+
+      - name: Code Deploy
+        run: aws deploy create-deployment --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
