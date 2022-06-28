@@ -1,0 +1,21 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    # 인스턴스에서 파일이 저장될 위치
+    destination: /home/ubuntu/garit-server
+    overwirte: yes
+    
+permissions:
+  - object: /home/ubuntu
+    owner: ubuntu
+    group: ubuntu
+    mode: 755
+    
+hooks:
+  AfterInstall:
+    # location은 프로젝트의 root경로를 기준
+    - location: deploy.sh
+      timeout: 60
+      runas: root
