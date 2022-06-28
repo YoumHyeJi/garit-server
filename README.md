@@ -13,3 +13,5 @@
 - deploy.sh 파일을 다음과 같이 수정 
 - activce profile : dev
 
+# 자동 배포 에러 해결 (2022-06-29)
+- RDS 인바운드 규칙에 서버 IP 추가
