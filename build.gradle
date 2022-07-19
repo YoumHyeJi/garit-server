@@ -43,6 +43,8 @@ dependencies {
 	// 성능 저하 문제를 고려해서, 운영환경에서 사용할지 결정해야 함
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
 
+	// h2 - test 용 메모리 DB를 사용하기 위함
+	runtimeOnly 'com.h2database:h2'
 
 }
 
