@@ -42,7 +42,7 @@ class MemberRepositoryTest {
         /**
          * 이미 영속성 컨텍스트의 1차 캐시에 존재하는 앤티티를 조회하기 때문에, select 쿼리가 나가지 않는다.
          */
-        Member findMember = memberRepository.find(saveId);
+        Member findMember = memberRepository.findOne(saveId);
 
         // then
         Assertions.assertThat(findMember.getId()).isEqualTo(member.getId());
