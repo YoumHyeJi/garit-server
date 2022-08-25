@@ -46,6 +46,9 @@ dependencies {
 	// h2 - test 용 메모리 DB를 사용하기 위함
 	runtimeOnly 'com.h2database:h2'
 
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 }
 
 tasks.named('test') {
