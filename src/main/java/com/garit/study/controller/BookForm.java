@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class BookForm {
-
+                                              
     // 상품 수정을 위해 id 값을 받음
     private Long id;
 
