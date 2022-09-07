@@ -101,4 +101,17 @@ public class MemberService {
     public Member findOne(Long memberId){
         return memberRepository.findOne(memberId);
     }
+
+
+    /**
+     * 변경감지를 통한 name 수정
+     * 트랜잭션 내에서 조회하면, 영속성 컨텍스트 내에서 엔티티를 가져온다. => 변경감지 사용 가능!
+     *
+     * command(수정)과 query(조회)를 철저하게 분리하자!
+     */
+    @Transactional
+    public void update(Long id, String name) {
+        Member member = memberRepository.findOne(id);
+        member.setName(name);
+    }
 }

@@ -9,6 +9,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+/**
+ * Repository는 순수한 엔티티, 혹은 엔티티와 연관된 객체 그래프를 탐색할 때 사용함.
+ */
 @Repository
 @RequiredArgsConstructor
 public class OrderRepository {
@@ -77,4 +80,18 @@ public class OrderRepository {
         }
         return query.getResultList();
     }
+
+    /**
+     * [fetch join]
+     * 한방쿼리로 Order, Member, Delivery를 join해서,
+     * select 절에서 관련 정보를 모두 가져온다.
+     * => LAZY를 무시하고 진짜 값을 다 채워서 가져온다. (프록시 객체 X)
+     */
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class).getResultList();
+    }
+
 }

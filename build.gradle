@@ -49,6 +49,9 @@ dependencies {
 	// validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// hibernate5module
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+
 }
 
 tasks.named('test') {
