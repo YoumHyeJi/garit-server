@@ -1,0 +1,22 @@
+spring:
+#  datasource:
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password:
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
+#    properties:
+#      hibernate:
+#        # System.out으로 sql을 print한다.
+#        # show_sql: true
+#        format_sql: true
+
+logging:
+  level:
+    # log로 sql을 print한다.
+    org.hibernate.SQL: debug
+    # log로 쿼리 파라미터를 print한다.
+    org.hibernate.type: trace
