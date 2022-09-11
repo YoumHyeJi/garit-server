@@ -1,40 +1,104 @@
-plugins {
-	id 'org.springframework.boot' version '2.7.1'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+//querydsl 추가
+buildscript {
+    dependencies {
+        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
+    }
 }
+
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+//querydsl 추가
+apply plugin: "com.ewerk.gradle.plugins.querydsl"
 
 group = 'com.garit'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
 
-	// web
-	implementation 'org.jetbrains:annotations:20.1.0'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // web - tomcat, webmvc 라이브러리를 가져옴
+    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	// mysql & jpa
-	runtimeOnly 'mysql:mysql-connector-java'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // mysql & jpa
+    runtimeOnly 'mysql:mysql-connector-java'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // thymeleaf - templates engine으로 thymeleaf 사용
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // devtools - reloading 가능
+    implementation 'org.springframework.boot:spring-boot-devtools'
+
+    // p6spy - 쿼리 파라미터를 로그로 찍기 가능 (스프링 부트가 적절한 버전을 모르므로, 버전 정보 적어야함)
+    // 성능 저하 문제를 고려해서, 운영환경에서 사용할지 결정해야 함
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
+
+    // h2 - test 용 메모리 DB를 사용하기 위함
+    runtimeOnly 'com.h2database:h2'
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // hibernate5module
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
+
+    //querydsl 추가
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
+
 
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
+}
+
+jar {
+    enabled = false
+}
+
+//querydsl 추가
+//def querydslDir = 'src/main/generated'
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', querydslDir]
+        }
+    }
+}
+
+compileQuerydsl{
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
 }
