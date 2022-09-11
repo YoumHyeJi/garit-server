@@ -3,7 +3,6 @@ package com.garit.study.service;
 import com.garit.study.domain.Member;
 import com.garit.study.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,7 +76,8 @@ public class MemberService {
     @Transactional
     public Long join(Member member) {
         validateDuplicateMember(member);    // 중복 회원 검증
-        return memberRepository.save(member);
+        memberRepository.save(member);
+        return member.getId();
     }
 
     /**
@@ -99,7 +99,7 @@ public class MemberService {
 
     // 특정 회원 조회
     public Member findOne(Long memberId){
-        return memberRepository.findOne(memberId);
+        return memberRepository.findById(memberId).get();
     }
 
 
@@ -111,7 +111,7 @@ public class MemberService {
      */
     @Transactional
     public void update(Long id, String name) {
-        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.findById(id).get();
         member.setName(name);
     }
 }

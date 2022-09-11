@@ -1,7 +1,7 @@
 package com.garit.study;
 
 import com.garit.study.domain.Member;
-import com.garit.study.repository.MemberRepository;
+import com.garit.study.repository.MemberRepositoryOld;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberRepositoryTest {
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberRepositoryOld memberRepository;
 
     /**
      * tdd 단축키 생성

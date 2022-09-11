@@ -1,6 +1,11 @@
 package com.garit.study.repository;
 
 import com.garit.study.domain.Order;
+import com.garit.study.domain.OrderStatus;
+import com.garit.study.domain.QMember;
+import com.garit.study.domain.QOrder;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -9,14 +14,22 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
+import static com.garit.study.domain.QMember.member;
+import static com.garit.study.domain.QOrder.order;
+
 /**
  * Repository는 순수한 엔티티, 혹은 엔티티와 연관된 객체 그래프를 탐색할 때 사용함.
  */
 @Repository
-@RequiredArgsConstructor
 public class OrderRepository {
 
     private final EntityManager em;
+    private final JPAQueryFactory query;
+
+    public OrderRepository(EntityManager em) {
+        this.em = em;
+        this.query = new JPAQueryFactory(em);
+    }
 
     public void save(Order order) {
         em.persist(order);
@@ -79,6 +92,34 @@ public class OrderRepository {
             query = query.setParameter("name", orderSearch.getMemberName());
         }
         return query.getResultList();
+    }
+
+    /**
+     * QueryDsl을 사용해서 동적쿼리 작성하기
+     * => compile 시점에 오타가 잡히는 엄청난 장점이 있다. (100% 자바 코드이기 때문)
+     */
+    public List<Order> findAllByQueryDsl(OrderSearch orderSearch){
+
+        return query.select(order)
+                .from(order)
+                .join(order.member, member)
+                .where(statusEq(orderSearch.getOrderStatus()), nameLike(orderSearch.getMemberName()))
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression statusEq(OrderStatus statusCond){
+        if (statusCond == null){
+            return null;
+        }
+        return order.status.eq(statusCond);
+    }
+
+    private BooleanExpression nameLike(String memberName){
+        if(!StringUtils.hasText(memberName)){
+            return null;
+        }
+        return member.name.like(memberName);
     }
 
     /**

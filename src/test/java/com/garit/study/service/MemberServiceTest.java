@@ -1,7 +1,7 @@
 package com.garit.study.service;
 
 import com.garit.study.domain.Member;
-import com.garit.study.repository.MemberRepository;
+import com.garit.study.repository.MemberRepositoryOld;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ class MemberServiceTest {
     MemberService memberService;
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberRepositoryOld memberRepository;
 
     @Autowired
     EntityManager em;
