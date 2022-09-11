@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ public class Order {
      * 다른 곳에서 orderItem을 참조하지 않기 때문에 (private owner) cascade 속성을 쓸 수 있다.
      * 즉, lifecycle이 일치하고, private owner일 때 cascade속성을 쓸 수 있다.
      */
+    @BatchSize(size = 1000)     // 컬랙션인 경우, 해당 필드에 @BatchSize 어노테이션 사용
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 

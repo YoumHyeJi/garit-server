@@ -6,12 +6,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 
 import javax.persistence.*;
 
 import static javax.persistence.FetchType.LAZY;
 
+@BatchSize(size = 100)      // ToOne 연관관계인 경우, 클래스에 @BatchSize 어노테이션 적용!
 @Entity
 @Getter
 @Setter

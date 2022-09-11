@@ -94,4 +94,45 @@ public class OrderRepository {
                         " join fetch o.delivery d", Order.class).getResultList();
     }
 
+
+    /**
+     * 페이징 파라미터 (offset, limit)을 받는다.
+     * => xToOne 관계를 페치 조인한 경우에는, 페이징 처리가 정상적으로 된다.
+     */
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+
+    public List<Order> findAllWithItem() {
+        /**
+         * 1:N 연관관계에서 페치 조인을 하면, 데이터가 N만큼 증가된다.
+         * distinct 키워드를 넣어주면, 중복을 제거해줄 수 있다.
+         *
+         * [JPA distinct 키워드의 두가지 기능]
+         * 1) DB SQL에 distinct 키워드를 붙여준다.
+         * 2) 쿼리 결과로 받은 엔티티 리스트 중에 중복이 존재하면, 이를 제거해준다.
+         * => JPA의 distinct 키워드는 Order가 같은 PK(id) 값을 가질 때, 중복으로 간주하고 한 엔티티를 제거해준다.
+         * => cf) DB의 distinct 키워드는 두 행이 완전히 똑같아야, 중복으로 간주하고 한 행을 제거해준다.
+         *
+         * !!그러나 페이징이 안되는 단점이 있다!!
+         */
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .setFirstResult(1)
+                .setMaxResults(100)
+                .getResultList();
+    }
+
+
 }
